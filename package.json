@@ -1,0 +1,42 @@
+{
+  "name": "videohub",
+  "productName": "VideoHub 视频聚合台",
+  "version": "2.2.0",
+  "description": "聚合抖音、哔哩哔哩、快手、央视网、腾讯体育及虎牙、斗鱼等直播平台的桌面视频浏览客户端；支持自选聚合页面、列宽调整、单列关闭、自定义视频源（AI 智能识别 / 按名称索引）与免登录游客模式",
+  "main": "src/main/index.js",
+  "author": "VideoHub",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "dist": "electron-builder --win --x64",
+    "pack": "electron-builder --dir",
+    "portable": "node tools/build-portable.js",
+    "installer": "node tools/build-installer.js",
+    "installer:clean": "node tools/build-installer.js --rebuild",
+    "smoke": "node tools/smoke.js"
+  },
+  "devDependencies": {
+    "electron": "^33.3.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.videohub.app",
+    "productName": "VideoHub",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "VideoHub"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ]
+  }
+}
