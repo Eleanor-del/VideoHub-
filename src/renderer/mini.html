@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+    <title>迷你播放</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0; height: 100%; overflow: hidden; background: transparent;
+        font-family: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+        font-size: 12px; color: #e9ebf0; user-select: none; cursor: default;
+      }
+      svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+      #bar {
+        position: fixed; top: 0; left: 0; right: 0; height: 36px;
+        display: flex; align-items: center; gap: 6px; padding: 0 6px;
+        background: #14161c; -webkit-app-region: drag;
+      }
+      #bar .title { font-weight: 600; letter-spacing: .3px; opacity: .9; }
+      #bar .spacer { flex: 1; }
+      button {
+        -webkit-app-region: no-drag;
+        width: 28px; height: 26px; display: inline-flex; align-items: center; justify-content: center;
+        border: none; background: none; color: #b9bfca; border-radius: 6px; font: inherit; cursor: default;
+      }
+      button:hover { background: #22252d; color: #fff; }
+      button.close:hover { background: #e5484d; color: #fff; }
+      button.on { background: #2b3a52; color: #7cc4ff; }
+
+      /* 上班摸鱼面板 */
+      #panel {
+        position: fixed; top: 36px; left: 0; right: 0; display: none; z-index: 5;
+        background: rgba(20, 22, 28, 0.96); border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 10px 12px 12px; -webkit-app-region: no-drag;
+      }
+      #panel.show { display: block; }
+      #panel .row { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; }
+      #panel .row:last-of-type { margin-bottom: 0; }
+      #panel .lb { opacity: 0.85; white-space: nowrap; }
+      #panel input[type="range"] { flex: 1; accent-color: #7cc4ff; height: 18px; cursor: default; }
+      #panel .val { width: 44px; text-align: right; opacity: 0.8; font-variant-numeric: tabular-nums; }
+      #panel .small {
+        width: auto; padding: 0 9px; height: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 6px;
+      }
+      #panel .hint { opacity: 0.6; font-size: 11px; }
+      #panel .tip { opacity: 0.5; font-size: 11px; line-height: 1.6; margin-top: 8px; }
+    </style>
+  </head>
+  <body>
+    <div id="bar">
+      <span class="title">迷你播放</span>
+      <span class="spacer"></span>
+      <button id="b-stealth" title="上班摸鱼（透明 / 隐身）">
+        <svg viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 6.2A9 9 0 0 1 12 6c5 0 9 6 9 6a15 15 0 0 1-2.4 3.1M6.3 8A15 15 0 0 0 3 12s4 6 9 6c1.4 0 2.7-.4 3.8-1" /><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+      </button>
+      <button id="b-back" title="后退"><svg viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg></button>
+      <button id="b-reload" title="刷新"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9" /><path d="M20 4.5V10h-5.5" /></svg></button>
+      <button id="b-top" title="置顶/取消置顶"><svg viewBox="0 0 24 24"><path d="M12 4v9M8.5 7.5 12 4l3.5 3.5M5 19h14" /></svg></button>
+      <button id="b-close" class="close" title="关闭"><svg viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" /></svg></button>
+    </div>
+
+    <div id="panel">
+      <div class="row">
+        <span class="lb">透明度</span>
+        <input id="r-opacity" type="range" min="15" max="100" step="1" value="100" />
+        <span class="val" id="v-opacity">100%</span>
+      </div>
+      <div class="row">
+        <button class="small" data-op="1">不透明</button>
+        <button class="small" data-op="0.85">微透</button>
+        <button class="small" data-op="0.62">半透</button>
+        <button class="small" data-op="0.35">很透</button>
+      </div>
+      <div class="row">
+        <button id="b-hide" class="small">任务栏隐身</button>
+        <span class="hint">开启后 Alt+Tab 与任务栏都看不到它</span>
+      </div>
+      <div class="tip">老板键 Ctrl+Alt+H：一键隐藏全部窗口并静音，再按一次恢复</div>
+    </div>
+
+    <script src="mini.js"></script>
+  </body>
+</html>
