@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>页面加载失败</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0; height: 100%;
+        background: #f5f6f8;
+        font-family: "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+        color: #1f2328;
+        display: flex; align-items: center; justify-content: center;
+        user-select: none; cursor: default;
+      }
+      .card {
+        width: 460px; max-width: 82vw;
+        background: #fff; border: 1px solid #e6e8ec; border-radius: 14px;
+        padding: 28px 28px 22px;
+        box-shadow: 0 8px 28px rgba(16, 24, 40, .07);
+        text-align: center;
+      }
+      .icon {
+        width: 46px; height: 46px; margin: 0 auto 14px;
+        border-radius: 12px; background: #fdecec; color: #e5484d;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+      h1 { font-size: 16px; margin: 0 0 8px; }
+      p { font-size: 12.5px; line-height: 1.7; color: #6b7280; margin: 0 0 6px; }
+      .url {
+        font-size: 11.5px; color: #9aa1ac; word-break: break-all;
+        background: #f7f8fa; border-radius: 8px; padding: 8px 10px; margin: 12px 0 18px;
+        max-height: 62px; overflow: hidden;
+      }
+      .btns { display: flex; gap: 10px; justify-content: center; }
+      button {
+        height: 34px; padding: 0 20px; border-radius: 17px;
+        border: 1px solid #dcdfe6; background: #fff; color: #1f2328;
+        font: inherit; font-size: 13px; cursor: default;
+      }
+      button.primary { background: #3b5bdb; border-color: #3b5bdb; color: #fff; }
+      button:hover { filter: brightness(.97); }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M12 4.5 21 19.5H3z" /><path d="M12 10v4.2M12 17h.01" stroke-width="2.2" /></svg>
+      </div>
+      <h1>页面加载失败</h1>
+      <p id="desc">请检查网络连接后重试</p>
+      <div class="url" id="url"></div>
+      <div class="btns">
+        <button class="primary" id="retry">重新加载</button>
+        <button id="home">回到首页</button>
+      </div>
+    </div>
+    <script src="error.js"></script>
+  </body>
+</html>
