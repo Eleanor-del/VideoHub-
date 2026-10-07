@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'" />
+    <title>VideoHub · 视频聚合台</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- 顶部自定义标题栏 -->
+    <header id="topbar" class="drag">
+      <div class="brand nodrag">
+        <svg viewBox="0 0 24 24" class="brand-logo" aria-hidden="true">
+          <rect x="2" y="4" width="20" height="16" rx="4" />
+          <path d="M10.5 9.5l4.5 2.5-4.5 2.5z" class="fill" />
+        </svg>
+        <span>VideoHub</span>
+      </div>
+
+      <div class="nav-btns nodrag">
+        <button id="btn-back" class="icon-btn" title="后退 (Alt+←)">
+          <svg viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg>
+        </button>
+        <button id="btn-forward" class="icon-btn" title="前进 (Alt+→)">
+          <svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5" /></svg>
+        </button>
+        <button id="btn-reload" class="icon-btn" title="刷新 (F5)">
+          <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.6-5.9" /><path d="M20 4.5V10h-5.5" /></svg>
+        </button>
+        <button id="btn-home" class="icon-btn" title="回到平台首页">
+          <svg viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7V20H4z" /></svg>
+        </button>
+      </div>
+
+      <div class="search-wrap nodrag">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" class="search-icon"><circle cx="11" cy="11" r="6.5" /><path d="M16 16l4.5 4.5" /></svg>
+          <input id="search-input" type="text" placeholder="搜索视频、作者…" autocomplete="off" spellcheck="false" />
+          <button id="scope-btn" class="scope-btn" title="搜索范围">
+            <span id="scope-label">当前平台</span>
+            <svg viewBox="0 0 24 24" class="caret"><path d="M7 10l5 5 5-5" /></svg>
+          </button>
+          <div id="scope-menu" class="menu hidden">
+            <div class="menu-item" data-scope="current">当前平台</div>
+            <div class="menu-item" data-scope="all">全平台（聚合分屏）</div>
+          </div>
+          <button id="btn-search" class="search-go">搜索</button>
+        </div>
+        <div id="suggest" class="menu suggest hidden"></div>
+      </div>
+
+      <div class="top-right nodrag">
+        <button id="btn-mute" class="icon-btn" title="一键静音 / 取消静音">
+          <svg viewBox="0 0 24 24"><path d="M4 9.5h3l4-4v13l-4-4H4z" /><path d="M15 9a4 4 0 0 1 0 6" /><path d="M17.5 7a7 7 0 0 1 0 10" /></svg>
+        </button>
+        <button id="btn-fav" class="icon-btn" title="收藏当前页面 (Ctrl+D)">
+          <svg viewBox="0 0 24 24"><path d="M12 4.6l2.3 4.7 5.2.8-3.8 3.6.9 5.1-4.6-2.4-4.6 2.4.9-5.1-3.8-3.6 5.2-.8z" /></svg>
+        </button>
+        <button id="btn-mini" class="icon-btn" title="小窗播放当前页面">
+          <svg viewBox="0 0 24 24"><rect x="14.5" y="13" width="7" height="7" rx="1.5" /><path d="M3 5.5h11v9H3z" /></svg>
+        </button>
+        <button id="btn-set" class="icon-btn" title="设置">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2M6 6l1.5 1.5M16.5 16.5 18 18M18 6l-1.5 1.5M7.5 16.5 6 18" /></svg>
+        </button>
+        <div id="set-menu" class="menu hidden">
+          <div class="menu-title">聚合分屏包含页面</div>
+          <div id="split-toggles"></div>
+
+          <div class="menu-sep"></div>
+          <div class="menu-title">布局方式</div>
+          <div class="chip-row">
+            <button class="chip" data-lm="row">横排</button>
+            <button class="chip" data-lm="grid">网格</button>
+            <button class="chip" data-lm="focus">主次</button>
+          </div>
+          <div class="chip-row hidden" id="grid-cols-row">
+            <button class="chip" data-gridcols="2">每行 2 个</button>
+            <button class="chip" data-gridcols="3">每行 3 个</button>
+            <button class="chip" data-gridcols="4">每行 4 个</button>
+          </div>
+
+          <div class="menu-sep"></div>
+          <div class="menu-title">排列顺序</div>
+          <div id="pane-order"></div>
+
+          <div class="menu-sep"></div>
+          <div class="menu-title">列宽（横排模式）</div>
+          <div class="chip-row">
+            <button class="chip" data-ratio="equal">等宽</button>
+            <button class="chip" data-ratio="master">主次</button>
+            <button class="chip" data-ratio="reset">重置</button>
+          </div>
+
+          <div class="menu-sep"></div>
+          <div class="menu-item" id="menu-solo">最大化当前列</div>
+
+          <div class="menu-sep"></div>
+          <div class="menu-title">分屏声音</div>
+          <div class="chip-row">
+            <button class="chip" data-audio="focus">仅焦点列</button>
+            <button class="chip" data-audio="all">全部</button>
+            <button class="chip" data-audio="off">静音</button>
+          </div>
+
+          <div class="menu-sep"></div>
+          <div class="menu-item" id="menu-guest">免登录模式（游客访问）</div>
+          <div class="menu-item" id="menu-add-source">添加 / 管理视频源</div>
+          <div class="menu-item" id="menu-shot">
+          <div class="menu-item" id="menu-download-video">下载视频（无水印）</div>
+          <div class="menu-item" id="menu-download-image">下载图片（无水印）</div>截取当前页面</div>
+          <div class="menu-item" id="menu-reload-all">刷新全部分屏</div>
+          <div class="menu-item" id="menu-theme">深色模式</div>
+          <div class="menu-item" id="menu-top">窗口置顶</div>
+          <div class="menu-item" id="menu-clear">清除浏览数据（含登录态）</div>
+
+          <div class="menu-sep"></div>
+          <div class="menu-title">被拦截的外部协议链接</div>
+          <div id="blocked-list"></div>
+
+          <div class="menu-title" id="about-line"></div>
+        </div>
+
+        <div class="win-btns">
+          <button id="btn-min" class="win-btn" title="最小化">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14" /></svg>
+          </button>
+          <button id="btn-max" class="win-btn" title="最大化">
+            <svg viewBox="0 0 24 24"><rect x="5.5" y="5.5" width="13" height="13" rx="2" /></svg>
+          </button>
+          <button id="btn-close" class="win-btn close" title="关闭">
+            <svg viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- 分屏时的列头：可拖拽改宽、可单独关闭 -->
+    <div id="pane-headers" class="hidden"></div>
+
+    <!-- 左侧导航 -->
+    <aside id="sidebar">
+      <div class="section">
+        <div class="section-title">
+          <span>平台 / 视频源</span>
+          <button id="btn-add-source" class="sec-add" title="添加视频源（AI 自动识别）">＋</button>
+        </div>
+        <div id="platform-list"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <span>视图</span>
+          <button id="btn-pick-pages" class="sec-add" title="选择聚合页面">⚙</button>
+        </div>
+        <div class="seg">
+          <button id="mode-single" class="seg-btn active">单平台</button>
+          <button id="mode-split" class="seg-btn">聚合分屏</button>
+        </div>
+        <div id="page-picker" class="picker hidden"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" class="sec-icon"><circle cx="12" cy="12" r="8.5" /><path d="M3.5 12h17M12 3.5v17" /></svg>
+          NBA 免费专区
+        </div>
+        <div id="nba-list" class="category-list"></div>
+        <button id="btn-nba-split" class="text-btn nba-split-btn">一键四分屏看球</button>
+      </div>
+
+      <div class="section">
+        <div class="section-title">分类</div>
+        <div id="category-list" class="category-list"></div>
+      </div>
+
+      <div class="section grow">
+        <div class="mine-tabs">
+          <button class="mine-tab active" data-tab="fav">收藏</button>
+          <button class="mine-tab" data-tab="hist">历史</button>
+        </div>
+        <div id="mine-list" class="mine-list"></div>
+        <button id="btn-clear-history" class="text-btn hidden">清空历史记录</button>
+      </div>
+
+      <div class="sidebar-foot">
+        <button id="btn-collapse" class="text-btn" title="收起/展开侧栏">
+          <span id="collapse-label">收起侧栏</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- 添加 / 管理视频源 -->
+    <div id="src-modal" class="modal-mask hidden">
+      <div class="modal nodrag">
+        <div class="modal-head">
+          <strong>视频源</strong>
+          <button id="src-close" class="icon-btn" title="关闭">
+            <svg viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" /></svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="detect-row">
+            <input id="src-url" type="text" placeholder="粘贴视频网站首页地址，如 https://www.example.com" spellcheck="false" />
+            <button id="src-detect" class="btn-primary">AI 识别</button>
+          </div>
+          <div class="detect-row">
+            <input id="src-index-name" type="text" list="src-name-list" placeholder="或输入名称自动索引，如：小红书 / 微博 / 爱奇艺" spellcheck="false" />
+            <button id="src-index" class="btn-primary">按名称索引</button>
+          </div>
+          <datalist id="src-name-list"></datalist>
+          <div id="src-notes" class="src-notes hidden"></div>
+
+          <div class="form-grid">
+            <label>名称<input id="src-name" type="text" spellcheck="false" /></label>
+            <label>主色<input id="src-color" type="color" value="#7C3AED" /></label>
+            <label class="full">首页地址<input id="src-home" type="text" spellcheck="false" /></label>
+            <label class="full">搜索地址（用 {q} 代表关键词，留空则不参与统一搜索）
+              <input id="src-search" type="text" placeholder="https://www.example.com/search?q={q}" spellcheck="false" />
+            </label>
+          </div>
+
+          <div class="menu-title">分类入口（每行一条：名称|网址）</div>
+          <textarea id="src-cats" rows="3" spellcheck="false"></textarea>
+
+          <div class="menu-title">已添加的自定义源</div>
+          <div id="src-list" class="src-list"></div>
+        </div>
+
+        <div class="modal-foot">
+          <button id="src-cancel" class="btn">取消</button>
+          <button id="src-save" class="btn-primary">保存并添加</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="hidden"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
